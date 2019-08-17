@@ -43,3 +43,5 @@ hs_err_pid*
 
 /java/SplitPixals.java
 out/
+/basics.iml
+/.idea/
