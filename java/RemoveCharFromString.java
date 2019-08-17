@@ -1,5 +1,3 @@
-import com.sun.xml.internal.fastinfoset.util.CharArray;
-
 /**
  * Created by adamli on 3/6/16.
  */

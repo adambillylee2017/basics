@@ -1,6 +1,7 @@
-import org.testng.annotations.Test;
+import junit.framework.TestCase;
+import org.junit.Test;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Created by adamli on 6/30/16.
@@ -10,29 +11,29 @@ public class ValidRomanTest {
 
     @Test
     public void testIsPowerOfTen() throws Exception {
-        assertTrue(sol.isPowerOfTen(100));
+        TestCase.assertTrue(sol.isPowerOfTen(100));
         assertFalse(sol.isPowerOfTen(20));
-        assertTrue(sol.isPowerOfTen(1));
+        TestCase.assertTrue(sol.isPowerOfTen(1));
     }
 
     @Test
     public void isValidRoman20() throws Exception {
-        assertTrue(sol.isValidRoman("XX"));
+        TestCase.assertTrue(sol.isValidRoman("XX"));
     }
 
     @Test
     public void isValidRoman15() throws Exception {
-        assertTrue(sol.isValidRoman("XV"));
+        TestCase.assertTrue(sol.isValidRoman("XV"));
     }
 
     @Test
     public void isValidRoman44() throws Exception {
-        assertTrue(sol.isValidRoman("XLIV"));
+        TestCase.assertTrue(sol.isValidRoman("XLIV"));
     }
 
     @Test
     public void isValidRoman769() throws Exception {
-        assertTrue(sol.isValidRoman("DCCLXIX"));
+        TestCase.assertTrue(sol.isValidRoman("DCCLXIX"));
     }
 
     @Test

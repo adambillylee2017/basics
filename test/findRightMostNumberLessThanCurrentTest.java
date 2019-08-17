@@ -1,4 +1,4 @@
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  * Created by adamli on 7/21/16.

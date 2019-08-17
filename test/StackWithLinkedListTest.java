@@ -1,5 +1,5 @@
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Created by adamli on 6/28/16.
@@ -46,14 +46,14 @@ public class StackWithLinkedListTest {
         Assert.assertEquals(2, sol.pop());
     }
 
-    @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = "Stack underflow")
+    @Test(expected = Exception.class)
     public void testExceptionPeak() throws Exception {
         sol = new StackWithLinkedList();
 
         sol.peak();
     }
 
-    @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = "Stack underflow")
+    @Test(expected = Exception.class)
     public void testExceptionPop() throws Exception {
         sol = new StackWithLinkedList();
 

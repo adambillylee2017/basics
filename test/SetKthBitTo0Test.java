@@ -1,7 +1,6 @@
 import org.junit.Test;
-import org.omg.PortableInterceptor.INACTIVE;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by adamli on 3/23/16.

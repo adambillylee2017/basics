@@ -1,6 +1,6 @@
 import org.junit.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Created by adamli on 8/24/16.
@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 public class WordPattern2Test {
     WordPattern2 sol;
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         sol = new WordPattern2();
     }

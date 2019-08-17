@@ -1,6 +1,4 @@
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
+import org.junit.Test;
 
 /**
  * Created by adamli on 7/24/16.
