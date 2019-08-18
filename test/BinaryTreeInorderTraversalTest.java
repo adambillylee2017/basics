@@ -1,9 +1,7 @@
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
-public class DFSWithStackTest {
+public class BinaryTreeInorderTraversalTest {
     TreeNode root;
 
     @Before
@@ -26,7 +24,7 @@ public class DFSWithStackTest {
 
     @Test
     public void DFSWithStack() {
-        DFSWithStack sol = new DFSWithStack();
+        BinaryTreeInorderTraversal sol = new BinaryTreeInorderTraversal();
 
         sol.DFSWithStack(root);
     }
