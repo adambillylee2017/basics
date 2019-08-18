@@ -23,7 +23,7 @@ class TreeNode {
 
     @Override
     public String toString() {
-        return this.toString(new StringBuilder(), true, new StringBuilder()).toString();
+        return String.valueOf(this.val);
     }
 
     public void print() {
