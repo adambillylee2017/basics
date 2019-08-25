@@ -4,46 +4,43 @@ import java.util.*;
  * Created by adamli on 6/19/16.
  */
 public class CloneGraphBFS {
-
+    /**
+     * there are two operations in deep copying a node
+     * 1. copy node and add mapping between original and copied node
+     * 2. recover neighbours in the new node
+     */
     public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
         if (node == null)
             return null;
 
-        /**
-         * create a queue of node with HAS NEIGHBOURS NOT COPIES YET
-         * because BFS copies the neighbours only, we have to copy the first
-         * node first in initialization
-         */
         Queue<UndirectedGraphNode> queue = new LinkedList<>();
         Map<UndirectedGraphNode, UndirectedGraphNode> visited = new HashMap<>();
-        queue.offer(node);
 
-        // copy first node and initialize queue and visited
-        UndirectedGraphNode head = new UndirectedGraphNode(node.label);
-        visited.put(node, head);
+        // for each new node in the graph, copy and establish mapping before pushing to queue
+        UndirectedGraphNode head = copyAndEstablishMapping(visited, node);
+        queue.offer(node);
 
         while (!queue.isEmpty()) {
             UndirectedGraphNode curr = queue.poll();
 
             /**
-             * loop through all neighbors of curr node
-             * copy the neighbor, not current node
+             * for all neighbour nodes, copy and establish mapping before pushing to queue
              */
             for (UndirectedGraphNode neighbor : curr.neighbors) {
                 /**
                  * if current neighbor is not copied yet, add it into the queue TO COPY ITS NEIGHBORS
                  */
                 if (!visited.containsKey(neighbor)) {
+                    // copy CURRENT NEIGHBOUR
+                    copyAndEstablishMapping(visited, neighbor);
+
                     // add it into the queue TO COPY ITS NEIGHBORS
                     queue.add(neighbor);
-
-                    // copy CURRENT NEIGHBOUR
-                    UndirectedGraphNode tmp = new UndirectedGraphNode(neighbor.label);
-                    visited.put(neighbor, tmp);
                 }
 
                 /**
-                 * fix the relationship between copied current node and copied current neighbour
+                 * the mapping for copied neighbour node has to exist in order to recover
+                 * neighbours in the new node
                  */
                 visited.get(curr)
                         .neighbors
@@ -52,5 +49,11 @@ public class CloneGraphBFS {
         }
 
         return head;
+    }
+
+    private UndirectedGraphNode copyAndEstablishMapping(Map<UndirectedGraphNode, UndirectedGraphNode> visited, UndirectedGraphNode neighbor) {
+        UndirectedGraphNode tmp = new UndirectedGraphNode(neighbor.label);
+        visited.put(neighbor, tmp);
+        return tmp;
     }
 }
