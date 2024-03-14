@@ -4,7 +4,7 @@ import org.junit.Test;
  * Created by adamli on 8/21/16.
  */
 public class SudokuSolverTest {
-    SudokuSolver sol = new SudokuSolver();
+    SudokuSolver.Solution sol = new SudokuSolver.Solution();
 
     @Test
     public void testSolveSudoku() throws Exception {
@@ -19,7 +19,7 @@ public class SudokuSolverTest {
 
         for (int i=0; i<9; i++) {
             for (int j=0; j<9; j++) {
-                System.out.print(board[i][j] +" ");
+                System.out.print(sol.board[i][j] +" ");
             }
             System.out.println();
         }

@@ -5,53 +5,52 @@ import java.util.List;
  * Created by adamli on 4/18/16.
  */
 public class PalindromePartitioning {
-    public static List<List<String>> partition(String s) {
-        List<List<String>> rst = new ArrayList<>();
+    static class Solution {
+        String s;
+        List<List<String>> solutions = new ArrayList<>();
+        Boolean[][] isPalindrome;
 
-        if (s.length() == 0 || s == null)
-            return rst;
+        public List<List<String>> partition(String s) {
+            this.s = s;
+            this.isPalindrome = new Boolean[s.length()][s.length()];
 
-        helper(rst, new ArrayList(), s, 0);
-
-        return rst;
-    }
-
-    private static void helper(List<List<String>> rst, List<String> list, String s, int index) {
-        if (index == s.length()) {
-            rst.add(new ArrayList<>(list));
-            printList(list);
-            return;
+            dfs(0, new ArrayList<>());
+            return solutions;
         }
 
-        for (int i = index; i < s.length(); i++) {
-            String tmp = s.substring(index, i + 1);
-            if (isPalindrome(tmp)) {
-                list.add(tmp);
-                helper(rst, list, s, i + 1);
-                list.remove(list.size() - 1);
+        void dfs(int start, List<String> solution) {
+            if (start == s.length()) {
+                solutions.add(new ArrayList<>(solution));
+                return;
+            }
+
+            for (int end = start; end < s.length(); end++) {
+                if (isPalindrome(s, start, end)) {
+                    String curr = s.substring(start, end + 1);
+                    solution.add(curr);
+                    dfs(end + 1, solution);
+                    solution.remove(solution.size() - 1);
+                }
             }
         }
-    }
 
-    private static boolean isPalindrome(String input) {
-        int i = 0;
-        int j = input.length() - 1;
+        boolean isPalindrome(String s, int l, int r) {
+            if (isPalindrome[l][r] != null) {
+                return isPalindrome[l][r];
+            }
 
-        while (i < j) {
-            if (input.charAt(i) != input.charAt(j))
-                return false;
+            while (r > l) {
+                if (s.charAt(l) == s.charAt(r)) {
+                    l++;
+                    r--;
+                } else {
+                    isPalindrome[l][r] = false;
+                    return false;
+                }
+            }
 
-            i++;
-            j--;
+            isPalindrome[l][r] = true;
+            return true;
         }
-
-        return true;
-    }
-
-    private static void printList(List<String> list) {
-        for (String str : list)
-            System.out.print(str + " ");
-
-        System.out.println();
     }
 }

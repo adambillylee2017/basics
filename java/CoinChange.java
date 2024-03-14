@@ -1,35 +1,61 @@
+import java.util.Arrays;
+
 /**
  * Created by adamli on 5/15/16.
  */
 public class CoinChange {
-    public int coinChange(int[] coins, int amount) {
-        // corner case
-        if (amount == 0)
-            return 0;
+    static class Solution1 {
+        int[] coins;
+        int result = Integer.MAX_VALUE;
 
-        int dp[] = new int[amount + 1];
+        public int coinChange(int[] coins, int amount) {
+            this.coins = coins;
 
-        // initiate dp, set dp[0] = 0 to kick off
-        dp[0] = 0;
-        for (int i = 1; i <= amount; i++) {
-            dp[i] = Integer.MAX_VALUE;
+            Arrays.sort(coins);
+            dfs(coins.length - 1, 0, amount);
+            return result == Integer.MAX_VALUE ? -1 : result;
         }
 
-        // loop through all amounts
-        for (int i = 0; i <= amount; i++) {
-            // for each amount check each coin
-            for (int coin : coins) {
-                /**
-                 * 1. if this amount < coin, cannot make up this amount for sure
-                 * 2. it amount - coin can be made up, than this amount can be made up, with count = previous count + 1
-                 */
-                if (i >= coin && dp[i - coin] < Integer.MAX_VALUE) {
-                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+        private void dfs(int index, int count, int amount) {
+            if (amount == 0) {
+                this.result = Math.min(count, result);
+                return;
+            }
+
+            for (int curr = index; curr >= 0; curr--) {
+                if (amount >= coins[curr]) {
+                    dfs(curr, count + 1, amount - coins[curr]);
                 }
             }
+
         }
 
-        // if amount take infinite coin to make up, return -1 for not found
-        return dp[amount] == Integer.MAX_VALUE ? -1 : dp[amount];
+    }
+
+    static class Solution2 {
+        int[] coins;
+        int[] dp;
+
+        public int coinChange(int[] coins, int amount) {
+            this.coins = coins;
+            this.dp = new int[amount + 1];
+
+            Arrays.fill(dp, amount + 1);
+
+            for (int sum = 0; sum <= amount; sum++) {
+                if (sum == 0) {
+                    dp[sum] = 0;
+                }
+
+                for (int coin : coins) {
+                    if (sum >= coin) {
+                        dp[sum] = Math.min(dp[sum], dp[sum - coin] + 1);
+                    }
+                }
+            }
+
+            return dp[amount] > amount ? -1 : dp[amount];
+        }
+
     }
 }

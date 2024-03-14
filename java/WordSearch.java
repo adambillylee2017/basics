@@ -1,59 +1,61 @@
 public class WordSearch {
-    public boolean exist(char[][] board, String word) {
-        if (board.length == 0  || board[0].length == 0 || word.length() == 0)
-            return false;
+    static class Solution {
+        char[][] board;
+        int tr;
+        int tc;
+        boolean[][] visited;
+        int[][] directions = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
 
-        char[] chars = word.toCharArray();
+        public boolean exist(char[][] board, String word) {
+            this.board = board;
+            this.tr = board.length;
+            this.tc = board[0].length;
+            this.visited = new boolean[tr][tc];
 
-        // generate starting point
-        for (int i=0; i<board.length; i++) {
-            for (int j=0; j<board[0].length; j++) {
-                if (helper(board, chars, 0, i, j))
-                    return true;
+            for (int r = 0; r < tr; r++) {
+                for (int c = 0; c < tc; c++) {
+                    if (dfs(r, c, word, 0)) {
+                        return true;
+                    }
+                }
             }
+
+            return false;
         }
 
-        return false;
+        private boolean dfs(int r, int c, String word, int index) {
+            char curr = board[r][c];
+            if (index == word.length()-1) {
+                return curr == word.charAt(word.length()-1);
+            }
+
+            if (curr != word.charAt(index)) {
+                return false;
+            }
+
+            visited[r][c] = true;
+            for (int[] dir : directions) {
+                int nr = r + dir[0];
+                int nc = c + dir[1];
+
+                if (valid(nr, nc)) {
+                    if (dfs(nr, nc, word, index+1)) {
+                        return true;
+                    }
+                }
+            }
+            visited[r][c] = false;
+
+            return false;
+        }
+
+        private boolean valid(int nr, int nc) {
+            if (nr < 0 || nr >= tr || nc < 0 || nc >= tc) {
+                return false;
+            }
+
+            return !visited[nr][nc];
+        }
     }
 
-    public boolean helper(char[][] board, char[] chars, int index, int row, int col) {
-        int[] cord = {row, col};
-
-        if (index == chars.length)
-            return true;
-
-        if (row<0 || col<0)
-            return false;
-
-        if (row>=board.length || col >= board[0].length)
-            return false;
-
-        if (chars[index] != board[row][col])
-            return false;
-
-        if (board[row][col] == '$')
-            return false;
-
-        char origin = board[row][col];
-        board[row][col] = '$';
-
-        // can we go up?
-        if (helper(board, chars, index+1, row-1, col))
-            return true;
-
-        // can we go down?
-        if (helper(board, chars, index+1, row+1, col))
-            return true;
-
-        // can we go left?
-        if (helper(board, chars, index+1, row, col-1))
-            return true;
-
-        // can we go right?
-        if (helper(board, chars, index+1, row, col+1))
-            return true;
-
-        board[row][col] = origin;
-        return false;
-    }
 }

@@ -1,47 +1,49 @@
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class CourseSchedule {
+    Course[] courses;
+
     public boolean canFinish(int numCourses, int[][] prerequisites) {
-        int indegree[] = new int[numCourses];
-        int graph[][] = new int[numCourses][numCourses];
-        Queue<Integer> queue = new LinkedList<>();
-        int counter = 0;
+        courses = new Course[numCourses];
+        Set<Integer> noPreReq = new HashSet<>();
 
-        // build graph matrix and indegree from input
-        for (int[] pair : prerequisites) {
-            int course = pair[0];
-            int preReq = pair[1];
-
-            // from preReq to course + 1
-            if (graph[preReq][course] == 0)
-                indegree[course]++;
-
-            // mark connection from preReq to course
-            graph[preReq][course] = 1;
-        }
-
-        // push all nodes with no in degrees into queue
         for (int i = 0; i < numCourses; i++) {
-            if (indegree[i] == 0)
-                queue.offer(i);
+            noPreReq.add(i);
+            courses[i] = new Course();
         }
 
-        while (!queue.isEmpty()) {
-            int curr = queue.poll();
-            counter++;
+        for (int[] preReq : prerequisites) {
+            int after = preReq[0];
+            int before = preReq[1];
 
-            for (int i = 0; i < numCourses; i++) {
-                // find all neighbour nodes from curr node
-                if (graph[curr][i] > 0) {
-                    indegree[i]--;
+            courses[after].requires.add(before);
+            courses[before].unlocks.add(after);
 
-                    if (graph[curr][i] == 0)
-                        queue.offer(i);
+            noPreReq.remove(after);
+        }
+
+        Queue<Integer> q = new LinkedList<>(noPreReq);
+        int taken = 0;
+
+        while (!q.isEmpty()) {
+            int takeNow = q.poll();
+            taken++;
+
+            for (int toBeUnlocked : courses[takeNow].unlocks) {
+                courses[toBeUnlocked].requires.remove(takeNow);
+
+                if (courses[toBeUnlocked].requires.isEmpty()) {
+                    q.offer(toBeUnlocked);
                 }
             }
         }
 
-        return counter == numCourses;
+        return taken == numCourses;
     }
+
+    static class Course {
+        Set<Integer> requires = new HashSet<>();
+        Set<Integer> unlocks = new HashSet<>();
+    }
+
 }

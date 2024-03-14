@@ -2,18 +2,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WordSearch2 {
+    int[][] directions = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+    char[][] board;
+    int tr;
+    int tc;
+    TrieNode root = new TrieNode();
+    List<String> rst = new ArrayList<>();
+
     private class TrieNode {
         TrieNode[] next = new TrieNode[26];
         String word;    // will only be word if this TrieNode is leaf
 
-        // check if this node is leaf
-        boolean isWord() {
+        // check if this node is leaf node
+        boolean isLeafNode() {
             return this.word != null;
-        }
-
-        // add char into current trie
-        void addNext(char c) {
-            this.next[c - 'a'] = new TrieNode();
         }
 
         // check if char c is in next level of current node
@@ -23,6 +25,10 @@ public class WordSearch2 {
 
         // get next level TrieNode of char c
         TrieNode getNext(char c) {
+            if (!hasNext(c)) {
+                this.next[c - 'a'] = new TrieNode();
+            }
+
             return next[c - 'a'];
         }
     }
@@ -34,17 +40,9 @@ public class WordSearch2 {
      * @return completed root node
      */
     public TrieNode buildTrie(String[] words) {
-        TrieNode root = new TrieNode();
-
         for (String word : words) {
             TrieNode curr = root;
             for (char c : word.toCharArray()) {
-                // if node for c is not in next level, create one
-                if (!curr.hasNext(c)) {
-                    curr.addNext(c);
-                }
-
-                // move cursor to next level
                 curr = curr.getNext(c);
             }
             // at the end of word, fill in word in current node
@@ -54,13 +52,31 @@ public class WordSearch2 {
         return root;
     }
 
-    public void helper(char[][] board, int row, int col, TrieNode curr, List<String> rst) {
+    public List<String> findWords(char[][] board, String[] words) {
+        this.board = board;
+        this.tr = board.length;
+        this.tc = board[0].length;
+        this.root = buildTrie(words);
+
+        /**
+         * bug point 2:
+         * need to check every staring point
+         */
+        for (int row = 0; row < tr; row++) {
+            for (int col = 0; col < tc; col++) {
+                helper(row, col, root);
+            }
+        }
+
+        return rst;
+    }
+
+    public void helper(int row, int col, TrieNode curr) {
         //check if current cell is valid
-        if (row < 0 || col < 0 || row >= board.length || col >= board[0].length)
+        if (oob(row, col))
             return;
 
         char c = board[row][col];
-
         // check if current cell is visited
         if (c == '$')
             return;
@@ -69,17 +85,11 @@ public class WordSearch2 {
         if (!curr.hasNext(c))
             return;
 
-        /**
-         * bug point: need to move curr cursor to corresponding trie node
-         * curr node will "not" be the leaf if not moved
-         */
         curr = curr.getNext(c);
 
         // if it is word
-        if (curr.isWord()) {
+        if (curr.isLeafNode()) {
             rst.add(curr.word);
-            System.out.println(curr.word);
-
             /**
              * remove the word from trie, for de-duplication
              */
@@ -94,27 +104,16 @@ public class WordSearch2 {
 
         // classic DFS template
         board[row][col] = '$';
-        helper(board, row + 1, col, curr, rst);
-        helper(board, row, col + 1, curr, rst);
-        helper(board, row - 1, col, curr, rst);
-        helper(board, row, col - 1, curr, rst);
+        for (int[] dir : directions) {
+            int nr = row + dir[0];
+            int nc = col + dir[1];
+            helper(nr, nc, curr);
+        }
         board[row][col] = c;
     }
 
-    public List<String> findWords(char[][] board, String[] words) {
-        TrieNode root = buildTrie(words);
-        List<String> rst = new ArrayList<>();
-
-        /**
-         * bug point 2:
-         * need to check every staring point
-         */
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[0].length; j++) {
-                helper(board, i, j, root, rst);
-            }
-        }
-
-        return rst;
+    private boolean oob(int row, int col) {
+        return row < 0 || col < 0 || row >= tr || col >= tc;
     }
+
 }

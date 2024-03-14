@@ -5,24 +5,40 @@ import java.util.List;
  * Created by adamli on 5/10/16.
  */
 public class Combinations {
-    public List<List<Integer>> combine(int n, int k) {
-        List<List<Integer>> rst = new ArrayList();
+    List<List<Integer>> rst;
+    int n;
+    int k;
 
-        helper(rst, new ArrayList<>(), 1, n, k);
+    /**
+     * @param n from range [1, n]
+     * @param k generate combination with k numbers
+     */
+    public List<List<Integer>> combine(int n, int k) {
+        rst = new ArrayList<>();
+        this.n = n;
+        this.k = k;
+
+        dfs(new ArrayList<>(), 1);
 
         return rst;
     }
 
-    private void helper(List<List<Integer>> rst, List<Integer> list, int index, int n, int k) {
-        if (k == 0) {
-            rst.add(new ArrayList(list));
+    public void dfs(List<Integer> list, int start) {
+        // base cases
+        if (list.size() == k) {
+            rst.add(new ArrayList<>(list));
             return;
         }
 
-        for (int i = index; i <= n; i++) {
-            list.add(i);
-            helper(rst, list, i + 1, n, k - 1);
-            list.remove(list.size() - 1);
+        if (start == n + 1) {
+            return;
         }
+
+        // choices
+        dfs(list, start + 1);
+
+        list.add(start);
+        dfs(list, start + 1);
+        list.remove(list.size() - 1);
     }
 }

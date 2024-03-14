@@ -4,147 +4,130 @@ import java.util.*;
  * Created by adamli on 5/8/16.
  */
 public class WordLadder2 {
-    int maxDist = 1;
-    boolean foundEnd = false;
-    HashMap<String, HashSet<String>> reverseMap = new HashMap<>();
-    HashMap<String, Integer> distance = new HashMap<>();
+    static class Solution {
+        List<List<String>> wordLadders;
+        Map<String, Integer> distMap;
 
-    public List<List<String>> findLadders(String beginWord, String endWord, Set<String> wordList) {
-        List<List<String>> rst = new ArrayList<>();
+        String beginWord;
 
-        /**
-         * use to calculate all distance from begin to any word (wordlist + endword)
-         */
-        bfs(beginWord, endWord, new HashSet<>(), wordList);
+        Map<String, Set<String>> neighbours;
 
-        /**
-         * dfs, starting from endWord and looking for beginWord
-         * always select next node with distance = previous distance - 1
-         */
-        dfs(rst, endWord, beginWord, new ArrayList<>(), new HashSet<>(), maxDist);
+        public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+            wordLadders = new ArrayList<>();
+            distMap = new HashMap<>();
+            neighbours = new HashMap<>();
+            this.beginWord = beginWord;
 
-        return rst;
-    }
+            if (!wordList.contains(endWord)) {
+                return wordLadders;
+            }
 
-    private void bfs(String beginWord, String endWord, Set<String> visited, Set<String> wordList) {
-        Queue<String> queue = new LinkedList<>();
-        queue.offer(beginWord);
+            buildNeighbors(beginWord, endWord, wordList);
 
-        while (!queue.isEmpty()) {
-            int len = queue.size();
-            for (int i = 0; i < len; i++) {
-                String curr = queue.poll();
+            // BFS to construct word -> distance map (from begin word)
+            bfs(beginWord);
 
-                if (visited.contains(curr))
-                    continue;
+            // with the map, find all the way back with DFS and construct result
+            dfs(beginWord, endWord, new ArrayList<>());
 
-                /**
-                 * if found endword, mark flag be true
-                 */
-                if (curr.equals(endWord)) {
-                    foundEnd = true;
-                }
+            return wordLadders;
+        }
 
-                distance.put(curr, maxDist);
-                visited.add(curr);
+        public void buildNeighbors(String beginWord, String endWord, List<String> wordList) {
+            List<String> allList = new ArrayList<>(wordList);
+            allList.addAll(Arrays.asList(beginWord, endWord));
 
-                List<String> expended = expend(curr, endWord, visited, wordList);
+            for (int left = 0; left < allList.size() - 1; left++) {
+                for (int right = 1; right < allList.size(); right++) {
+                    if (connected(allList.get(left), allList.get(right))) {
+                        if (!neighbours.containsKey(allList.get(left))) {
+                            neighbours.put(allList.get(left), new HashSet<>());
+                        }
+                        if (!neighbours.containsKey(allList.get(right))) {
+                            neighbours.put(allList.get(right), new HashSet<>());
+                        }
 
-                for (String next : expended) {
-                    if (reverseMap.get(next) == null) {
-                        reverseMap.put(next, new HashSet<>());
+                        neighbours.get(allList.get(left)).add(allList.get(right));
+                        neighbours.get(allList.get(right)).add(allList.get(left));
                     }
-
-                    reverseMap.get(next).add(curr);
-                }
-                queue.addAll(expended);
-            }
-
-            /**
-             * if found endWord, stop adding maxDistance
-             */
-            if (!foundEnd)
-                maxDist++;
-        }
-    }
-
-    private void dfs(List rst, String curr, String beginWord, List<String> list, Set<String> visited, int depth) {
-        if (curr == beginWord) {
-            /**
-             * since path is reversed (from end to begin, we need to reverse before add to result)
-             */
-            list.add(curr);
-            Collections.reverse(list);
-            rst.add(new ArrayList<>(list));
-
-            // BUG POINT: since its the end of DFS
-            // reverse list back, and manually remove last element from list
-            Collections.reverse(list);
-            list.remove(list.size() - 1);
-
-            return;
-        }
-
-        list.add(curr);
-        visited.add(curr);
-
-        Set<String> expended = reverseMap.get(curr);
-
-        if (expended != null) {
-            for (String back : expended) {
-                /**
-                 * always select nodes with distance = prev distance - 1
-                 */
-                if (distance.get(back) == depth - 1) {
-                    dfs(rst, back, beginWord, list, visited, depth - 1);
                 }
             }
         }
 
-        list.remove(curr);
-        visited.remove(curr);
-    }
+        public void bfs(String beginWord) {
+            Queue<String> queue = new LinkedList<>();
+            Set<String> visited = new HashSet<>();
+            int dist = 0;
 
-    private List<String> expend(String curr, String endWord, Set<String> visited, Set<String> wordList) {
-        List<String> rst = new ArrayList<>();
+            visited.add(beginWord);
+            queue.offer(beginWord);
 
-        // for all chars in a word
-        for (int i = 0; i < curr.length(); i++) {
-            // try replace it with all 26 chars
-            for (int j = 0; j < 26; j++) {
-                char charArray[] = curr.toCharArray();
-                char replaceChar = (char) ('a' + j);
+            while (!queue.isEmpty()) {
+                int size = queue.size();
+                for (int i = 0; i < size; i++) {
+                    String curr = queue.poll();
 
-                // skip if replace char is same as original
-                if (replaceChar != charArray[i])
-                    charArray[i] = replaceChar;
-                else
-                    continue;
+                    distMap.put(curr, dist);
 
-                String replaced = String.valueOf(charArray);
+                    List<String> nextWords = findNext(curr, visited);
+                    queue.addAll(nextWords);
+                }
+                dist++;
+            }
+        }
 
-                // if new word is valid, add to rst
-                if (isValidExpendWord(endWord, visited, wordList, replaced)) {
-                    rst.add(replaced);
+        public List<String> findNext(String curr, Set<String> visited) {
+            List<String> result = new ArrayList<>();
+
+            if (neighbours.get(curr) == null) {
+                return result;
+            }
+
+            for (String neighbour : neighbours.get(curr)) {
+                if (!visited.contains(neighbour)) {
+                    visited.add(neighbour);
+                    result.add(neighbour);
+                }
+            }
+
+            return result;
+        }
+
+        public void dfs(String curr, String endWord, List<String> currPath) {
+            if (curr.equals(endWord)) {
+                List<String> toBeAdded = new ArrayList<>(currPath);
+                toBeAdded.add(0, beginWord);
+                wordLadders.add(toBeAdded);
+                return;
+            }
+
+            if (neighbours.get(curr) == null) {
+                return;
+            }
+
+            for (String next : neighbours.get(curr)) {
+                if (distMap.get(next) - distMap.get(curr) == 1) {
+                    List<String> newPath = new ArrayList<>(currPath);
+                    newPath.add(next);
+                    dfs(next, endWord, newPath);
+                    newPath.remove(newPath.size() - 1);
                 }
             }
         }
 
-        return rst;
-    }
+        public boolean connected(String curr, String next) {
+            if (curr.length() != next.length()) {
+                return false;
+            }
 
-    private boolean isValidExpendWord(String endWord, Set<String> visited, Set<String> wordList, String replaced) {
-        // BUG POINT: remember to mark endWord as valid
-        if (replaced.equals(endWord)) {
-            return true;
+            int diff = 0;
+            for (int i = 0; i < curr.length(); i++) {
+                if (curr.charAt(i) != next.charAt(i)) {
+                    diff++;
+                }
+            }
+
+            return diff == 1;
         }
-
-        if (visited.contains(replaced))
-            return false;
-
-        if (!wordList.contains(replaced))
-            return false;
-
-        return true;
     }
 }

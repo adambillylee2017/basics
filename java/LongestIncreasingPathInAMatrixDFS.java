@@ -3,51 +3,58 @@
  */
 public class LongestIncreasingPathInAMatrixDFS {
     int max = 0;
-    int m = 0;
-    int n = 0;
+    int tr;
+    int tc;
+    int[][] pathLen;
+    int[][] matrix;
+
+    int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 
     public int longestIncreasingPath(int[][] matrix) {
-        if (matrix == null | matrix.length == 0 || matrix[0].length == 0)
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0)
             return 0;
 
-        m = matrix.length;
-        n = matrix[0].length;
+        this.matrix = matrix;
+        tr = matrix.length;
+        tc = matrix[0].length;
+        pathLen = new int[tr][tc];
 
-        int path[][] = new int[m][n];
-
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                helper(matrix, path, i, j, Integer.MIN_VALUE);
-                max = Math.max(path[i][j], max);
+        for (int r = 0; r < tr; r++) {
+            for (int c = 0; c < tc; c++) {
+                helper(pathLen, r, c, Integer.MIN_VALUE);
+                max = Math.max(pathLen[r][c], max);
             }
         }
         return max;
     }
 
-    private int helper(int[][] matrix, int[][] path, int i, int j, int prev) {
-        if (i < 0 || j < 0)
+    private int helper(int[][] pathLen, int r, int c, int prev) {
+        if (oob(r, c))
             return 0;
 
-        if (i >= m || j >= n)
+        int curr = matrix[r][c];
+
+        if (curr <= prev)
             return 0;
 
-        if (matrix[i][j] <= prev)
-            return 0;
+        if (pathLen[r][c] > 0)
+            return pathLen[r][c];
 
-        if (path[i][j] > 0)
-            return path[i][j];
+        pathLen[r][c] = 1;
 
-        path[i][j] = 1;
+        int pathMax = 0;
+        for (int[] dir : directions) {
+            int nr = r + dir[0];
+            int nc = c + dir[1];
 
-        int up = helper(matrix, path, i - 1, j, matrix[i][j]);
-        int down = helper(matrix, path, i + 1, j, matrix[i][j]);
-        int left = helper(matrix, path, i, j - 1, matrix[i][j]);
-        int right = helper(matrix, path, i, j + 1, matrix[i][j]);
+            pathMax = Math.max(pathMax, helper(pathLen, nr, nc, curr));
+        }
 
-        int maxUD = Math.max(up, down);
-        int maxLR = Math.max(left, right);
-        path[i][j] += Math.max(maxUD, maxLR);
+        pathLen[r][c] += pathMax;
+        return pathLen[r][c];
+    }
 
-        return path[i][j];
+    boolean oob(int r, int c) {
+        return r < 0 || r >= tr || c < 0 || c >= tc;
     }
 }

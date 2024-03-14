@@ -1,6 +1,7 @@
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -8,14 +9,14 @@ import static org.junit.Assert.*;
  * Created by adamli on 2/4/16.
  */
 public class PermutationTest {
-    Permutation sol = new Permutation();
+    Permutation.Solution sol = new Permutation.Solution();
     Permutation_with_dedup sol2 = new Permutation_with_dedup();
 
     @Test
     public void testPermutation() throws Exception {
-        int input[] = {3,4,5,1,2};
+        int input[] = {1,2,3};
 
-        ArrayList<ArrayList<Integer>> rst = sol.permutation(input);
+        List<List<Integer>> rst = sol.permute(input);
 
         for (int i=0; i<rst.size(); i++) {
             System.out.print("[");
@@ -45,7 +46,7 @@ public class PermutationTest {
     public void testPermutation3() throws Exception {
         int input[] = {1,2,3,4};
 
-        ArrayList<ArrayList<Integer>> rst = sol.permutation(input);
+        List<List<Integer>> rst = sol.permute(input);
 
         for (int i=0; i<rst.size(); i++) {
             System.out.print("[");

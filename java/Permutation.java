@@ -1,5 +1,5 @@
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by adamli on 2/4/16.
@@ -7,31 +7,32 @@ import java.util.HashMap;
  * with no order
  */
 public class Permutation {
-    public ArrayList<ArrayList<Integer>> permutation(int input[]) {
-        ArrayList<ArrayList<Integer>> rst = new ArrayList<>();
+    static class Solution {
+        List<List<Integer>> permutations;
 
-        if (input.length == 0)
-            return rst;
+        public List<List<Integer>> permute(int[] nums) {
+            permutations = new ArrayList<>();
 
-        helper(input, new ArrayList<Integer>(), rst);
-
-        return rst;
-    }
-
-    public void helper(int input[], ArrayList<Integer> selected, ArrayList<ArrayList<Integer>> rst) {
-        // add to result when selected length = input length
-        if (selected.size() == input.length) {
-            rst.add(new ArrayList<>(selected));
-            return;
+            dfs(nums,  new HashSet<>(), new ArrayList<>());
+            return permutations;
         }
 
-        for (int i = 0; i < input.length; i++) {
-            if (selected.contains(input[i]))
-                continue;
+        public void dfs(int[] nums,Set<Integer> visited, List<Integer> permutation) {
+            if (permutation.size() == nums.length) {
+                permutations.add(new ArrayList<>(permutation));
+                return;
+            }
 
-            selected.add(input[i]);
-            helper(input, selected, rst);
-            selected.remove(selected.size() - 1);
+            for (int curr : nums) {
+                if (visited.contains(curr)) {
+                    continue;
+                }
+
+                visited.add(curr);
+                permutation.add(curr);
+                dfs(nums, visited, permutation);
+                visited.remove(curr);
+                permutation.remove(permutation.size() - 1);
+            }
         }
-    }
-}
+    }}

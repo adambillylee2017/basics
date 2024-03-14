@@ -1,87 +1,94 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by adamli on 3/19/16.
  */
 public class NQueens {
-    public static ArrayList<int[]> NQueens(int size) {
-        if (size < 2) {
-            System.out.println("n<2");
+
+    static class Solution {
+        List<List<String>> result = new ArrayList<>();
+
+        public List<List<String>> solveNQueens(int n) {
+            dfs(0, getBoard(n));
+            return result;
         }
 
-        int[] board = new int[size];
-
-        ArrayList<int[]> rst = new ArrayList<>();
-        helper(rst, board, 0, size);
-
-        return rst;
-    }
-
-    static void helper(ArrayList<int[]> rst, int[] board, int currRow, int size) {
-        /**
-         * base case:
-         * based on currRow
-         */
-        if (currRow == size) {
-            drawBoard(board);
-            rst.add(board.clone());
-            return;
-        }
 
         /**
-         * each layer has n choices (each row has n columns)
-         * recursion call in loop for n-branch recursion tree
+         * Generates a board where index represent row and value represent the column of queen
+         * this allows O(1) scan of each row to find queen position
+         * value of -1 represent no queen have been placed on this row
+         *
+         * @param n The size of the board.
+         * @return An array representing the board.
          */
-        for (int currCol = 0; currCol < size; currCol++) {
-            boolean isAttacked = false;
-            /**
-             * check all existing column on board to validateRecurr current queen position
-             */
-            for (int existingRow = 0; existingRow < currRow; existingRow++) {
-                isAttacked = isAttacked(existingRow, board[existingRow], currRow, currCol);
-
-                if (isAttacked)
-                    break;
-            }
-
-            if (!isAttacked) {
-                // if not attacked, add current queen onto board
-                board[currRow] = currCol;
-                // go to next recursion level
-                helper(rst, board, currRow + 1, size);
-
-                /**
-                 * base case is based on currRow but currRow+1 on next level doesn't change currRow value
-                 * on this level after return, no operation needed to "put it back to previous state" after returning
-                 * from next level
-                 */
-            }
+        public int[] getBoard(int n) {
+            int[] board = new int[n];
+            Arrays.fill(board, -1);
+            return board;
         }
-    }
 
-    static boolean isAttacked(int r1, int c1, int r2, int c2) {
-        // if two queen on same col, they are attacking each other
-        if (c1 == c2)
-            return true;
+        private void dfs(int r, int[] board) {
+            if (r == board.length) {
+                result.add(translate(board));
+                return;
+            }
 
-        // if slope = 1, attacking each other
-        if (Math.abs(c1 - c2) == Math.abs(r1 - r2))
-            return true;
-
-        return false;
-    }
-
-    static void drawBoard(int[] board) {
-        for (int i=0; i<board.length; i++) {
-            for (int j=0; j<board.length; j++) {
-                if (board[i] != j) {
-                    System.out.print("i ");
-                }else{
-                    System.out.print("Q ");
+            for (int c = 0; c < board.length; c++) {
+                if (!attacked(board, r, c)) {
+                    board[r] = c;
+                    dfs(r + 1, board);
+                    board[r] = -1;
                 }
             }
-            System.out.println();
         }
-        System.out.println();
+
+        /**
+         * Determines if a queen at a given position on the chess board is attacked by another queen
+         *
+         * @param board   An array representing the board where index represents row and value represents the column of the queen
+         * @param queenR  The row index of the queen
+         * @param queenC  The column index of the queen
+         * @return true if the queen is attacked, false otherwise
+         */
+        public boolean attacked(int[] board, int queenR, int queenC) {
+            // check all previous row to make sure queen at current position is not attacked
+            for (int boardR = 0; boardR < queenR; boardR++) {
+                int boardC = board[boardR];
+
+                if (boardC == queenC) {
+                    return true;
+                }
+
+                // absolute slope = 1 -> attacked on diagonal
+                if (Math.abs(boardR - queenR) == Math.abs(boardC - queenC)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public List<String> translate(int[] board) {
+            List<String> solution = new ArrayList<>();
+
+            for (int r = 0; r < board.length; r++) {
+                StringBuilder sb = new StringBuilder();
+                int queenC = board[r];
+                for (int c = 0; c < board.length; c++) {
+                    if (c == queenC) {
+                        sb.append('Q');
+                    } else {
+                        sb.append('.');
+                    }
+                }
+                solution.add(sb.toString());
+            }
+
+            return solution;
+        }
     }
+
 }
