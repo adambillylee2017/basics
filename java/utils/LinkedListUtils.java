@@ -12,6 +12,12 @@ public class LinkedListUtils {
         }
     }
 
+    public static class Node extends ListNode {
+        public Node(int val) {
+            super(val);
+        }
+    }
+
     public static ListNode build(String str) {
         return build(str, List.of("[", "]"), ",");
     }
