@@ -1,10 +1,8 @@
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
-public class SatisfiabilityofEqualityEquationsTest {
-    SatisfiabilityofEqualityEquations.Solution sol = new SatisfiabilityofEqualityEquations.Solution();
+public class SatisfiabilityOfEqualityEquationsTest {
+    SatisfiabilityOfEqualityEquations.Solution sol = new SatisfiabilityOfEqualityEquations.Solution();
 
     @Test
     public void test1() {

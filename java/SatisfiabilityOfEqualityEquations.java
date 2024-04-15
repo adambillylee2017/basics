@@ -1,7 +1,7 @@
 import java.util.HashMap;
 import java.util.Map;
 
-public class SatisfiabilityofEqualityEquations {
+public class SatisfiabilityOfEqualityEquations {
     static class Solution {
         Map<Character, Character> eq = new HashMap<>();
         Map<Character, Integer> rank = new HashMap<>();
