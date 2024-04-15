@@ -50,4 +50,14 @@ public class ListArrayUtils {
         }
         System.out.println();
     }
+
+    public static void prettyPrint(char[][] matrix) {
+        for (char[] row : matrix) {
+            for (int c = 0; c < matrix[0].length; c++) {
+                System.out.print(row[c] + "\t");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
 }
